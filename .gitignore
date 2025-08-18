@@ -1,1 +1,53 @@
-.env.backend.test
+# Dependencies
+/vendor/
+/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+/logs/
+*.log
+
+# Cache
+/cache/
+.phpunit.cache/
+.php-cs-fixer.cache
+
+# Build artifacts
+/public/assets/css/master.css
+/build/
+/dist/
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Testing
+/coverage/
+.phpunit.result.cache
+
+# Temporary files
+/tmp/
+/temp/
+
+# Docker
+docker-compose.override.yml
+
+# Backup files
+*.bak
+*.backup
