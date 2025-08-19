@@ -38,6 +38,7 @@ $container = $containerBuilder->build();
 $app = AppFactory::createFromContainer($container);
 
 // Register middleware
+$app->addBodyParsingMiddleware(); // Add this to parse JSON request bodies
 $app->addRoutingMiddleware();
 $app->add(new ErrorMiddleware(
     $app->getCallableResolver(),

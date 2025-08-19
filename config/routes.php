@@ -25,6 +25,7 @@ return function (App $app) {
     $app->group('/api/v1', function (RouteCollectorProxy $group) {
         // Public endpoints
         $group->post('/auth/login', 'App\Actions\Api\Auth\LoginAction');
+        $group->get('/auth/test-errors', 'App\Actions\Api\Auth\TestErrorsAction');
         $group->post('/auth/register', 'App\Actions\Api\Auth\RegisterAction');
         $group->post('/auth/refresh', 'App\Actions\Api\Auth\RefreshAction');
         
