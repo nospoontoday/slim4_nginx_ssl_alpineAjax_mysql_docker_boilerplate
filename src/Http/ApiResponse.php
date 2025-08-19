@@ -38,8 +38,9 @@ class ApiResponse
             ], $meta)
         ];
         
+        $response->getBody()->write(json_encode($payload));
         return $response
-            ->withJson($payload)
+            ->withHeader('Content-Type', 'application/json')
             ->withStatus($status);
     }
     
@@ -67,8 +68,9 @@ class ApiResponse
             ]
         ];
         
+        $response->getBody()->write(json_encode($payload));
         return $response
-            ->withJson($payload)
+            ->withHeader('Content-Type', 'application/json')
             ->withStatus($status);
     }
     
@@ -125,8 +127,14 @@ class ApiResponse
         
         if (!empty($errors)) {
             $html .= '<ul>';
-            foreach ($errors as $field => $error) {
-                $html .= '<li>' . htmlspecialchars($error) . '</li>';
+            foreach ($errors as $field => $fieldErrors) {
+                if (is_array($fieldErrors)) {
+                    foreach ($fieldErrors as $error) {
+                        $html .= '<li>' . htmlspecialchars($error) . '</li>';
+                    }
+                } else {
+                    $html .= '<li>' . htmlspecialchars($fieldErrors) . '</li>';
+                }
             }
             $html .= '</ul>';
         }

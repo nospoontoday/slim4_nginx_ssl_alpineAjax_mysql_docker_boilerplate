@@ -25,6 +25,7 @@ css: ## Build CSS files
 	cat public/assets/css/variables.css \
 	    public/assets/css/base.css \
 	    public/assets/css/components.css \
+	    public/assets/css/login.css \
 	    public/assets/css/utilities.css \
 	    > public/assets/css/master.css
 	@echo "CSS built successfully"

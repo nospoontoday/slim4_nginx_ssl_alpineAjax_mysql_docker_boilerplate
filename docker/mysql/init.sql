@@ -13,12 +13,15 @@ CREATE TABLE IF NOT EXISTS `users` (
     `email` VARCHAR(255) NOT NULL,
     `password_hash` VARCHAR(255) NOT NULL,
     `role` ENUM('user', 'admin') DEFAULT 'user',
+    `is_active` BOOLEAN DEFAULT TRUE,
     `email_verified_at` TIMESTAMP NULL,
+    `last_login_at` TIMESTAMP NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
     INDEX `idx_users_email` (`email`),
     INDEX `idx_users_uuid` (`uuid`),
+    INDEX `idx_users_is_active` (`is_active`),
     CONSTRAINT `uk_users_email` UNIQUE (`email`),
     CONSTRAINT `uk_users_uuid` UNIQUE (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -42,9 +45,9 @@ CREATE TABLE IF NOT EXISTS `posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert sample data
-INSERT INTO `users` (`uuid`, `first_name`, `last_name`, `email`, `password_hash`, `role`, `email_verified_at`) VALUES
-('550e8400-e29b-41d4-a716-446655440000', 'Admin', 'User', 'admin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', NOW()),
-('550e8400-e29b-41d4-a716-446655440001', 'John', 'Doe', 'john@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', NOW());
+INSERT INTO `users` (`uuid`, `first_name`, `last_name`, `email`, `password_hash`, `role`, `is_active`, `email_verified_at`) VALUES
+('550e8400-e29b-41d4-a716-446655440000', 'Admin', 'User', 'admin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', TRUE, NOW()),
+('550e8400-e29b-41d4-a716-446655440001', 'John', 'Doe', 'john@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user', TRUE, NOW());
 
 INSERT INTO `posts` (`uuid`, `user_id`, `title`, `content`, `status`, `published_at`) VALUES
 ('550e8400-e29b-41d4-a716-446655440002', 1, 'Welcome to Our App', 'This is the first post in our application.', 'published', NOW()),

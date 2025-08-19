@@ -106,18 +106,34 @@ final class UserRepository
     }
     
     /**
-     * Find user by email
+     * Find user by email for authentication
      * 
-     * @return array{id: int, uuid: string, first_name: string, last_name: string, email: string, role: string, password_hash: string}|null
+     * @return array{id: int, uuid: string, first_name: string, last_name: string, email: string, role: string, password: string, is_active: bool}|null
      */
     public function findByEmail(string $email): ?array
     {
-        $sql = 'SELECT id, uuid, first_name, last_name, email, role, password_hash FROM users WHERE email = :email';
+        $sql = 'SELECT id, uuid, first_name, last_name, email, role, password_hash, is_active FROM users WHERE email = :email';
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['email' => $email]);
         
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            // Map password_hash to password for consistency with AuthService
+            $result['password'] = $result['password_hash'] ?? null;
+            unset($result['password_hash']);
+            
+            // Ensure is_active is boolean (handle null case)
+            $result['is_active'] = !empty($result['is_active']);
+            
+            // Handle missing password gracefully
+            if (empty($result['password'])) {
+                // Log this issue for debugging
+                error_log("Warning: User {$email} has no password hash in database");
+                return null; // Treat as user not found for security
+            }
+        }
         
         return $result ?: null;
     }
@@ -131,7 +147,7 @@ final class UserRepository
      */
     public function create(array $data): int
     {
-        $sql = 'INSERT INTO users (uuid, first_name, last_name, email, password_hash, role) VALUES (:uuid, :first_name, :last_name, :email, :password_hash, :role)';
+        $sql = 'INSERT INTO users (uuid, first_name, last_name, email, password_hash, role, is_active) VALUES (:uuid, :first_name, :last_name, :email, :password_hash, :role, :is_active)';
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -140,7 +156,8 @@ final class UserRepository
             'last_name' => $data['last_name'],
             'email' => $data['email'],
             'password_hash' => $data['password_hash'],
-            'role' => $data['role'] ?? 'user'
+            'role' => $data['role'] ?? 'user',
+            'is_active' => $data['is_active'] ?? true
         ]);
         
         return (int) $this->db->lastInsertId();
@@ -150,14 +167,14 @@ final class UserRepository
      * Update user
      * 
      * @param positive-int $id
-     * @param array{first_name?: string, last_name?: string, email?: string, password_hash?: string, role?: string} $data
+     * @param array{first_name?: string, last_name?: string, email?: string, password_hash?: string, role?: string, is_active?: bool} $data
      */
     public function update(int $id, array $data): void
     {
         $fields = [];
         $params = ['id' => $id];
         
-        foreach (['first_name', 'last_name', 'email', 'password_hash', 'role'] as $field) {
+        foreach (['first_name', 'last_name', 'email', 'password_hash', 'role', 'is_active'] as $field) {
             if (isset($data[$field])) {
                 $fields[] = "{$field} = :{$field}";
                 $params[$field] = $data[$field];
@@ -182,6 +199,19 @@ final class UserRepository
     public function delete(int $id): void
     {
         $sql = 'DELETE FROM users WHERE id = :id';
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+    }
+    
+    /**
+     * Update user's last login timestamp
+     * 
+     * @param positive-int $id
+     */
+    public function updateLastLogin(int $id): void
+    {
+        $sql = 'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = :id';
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id' => $id]);
