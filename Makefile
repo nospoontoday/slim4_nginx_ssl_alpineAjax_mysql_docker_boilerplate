@@ -26,7 +26,16 @@ css: ## Build CSS files
 	    public/assets/css/base.css \
 	    public/assets/css/components.css \
 	    public/assets/css/utilities.css \
+	    public/assets/css/sugar.css \
 	    > public/assets/css/master.css
+	# Compile SCSS to CSS if sass is available
+	@if command -v sass >/dev/null 2>&1; then \
+		sass public/assets/sass/sugar.scss:public/assets/css/sugar.css; \
+		sass public/assets/sass/landing.scss:public/assets/css/landing.css; \
+		echo "SCSS compiled successfully"; \
+	else \
+		echo "sass not found, skipping SCSS compilation"; \
+	fi
 	@echo "CSS built successfully"
 
 css-watch: ## Watch and rebuild CSS

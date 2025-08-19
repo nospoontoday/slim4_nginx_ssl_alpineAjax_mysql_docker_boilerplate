@@ -9,10 +9,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\PhpRenderer;
 
 /**
- * @ai-endpoint GET /
+ * @ai-endpoint GET /register
  * @ai-auth none
  */
-final class HomeAction
+final class RegisterAction
 {
     public function __construct(
         private readonly PhpRenderer $renderer
@@ -21,10 +21,10 @@ final class HomeAction
     public function __invoke(Request $request, Response $response): Response
     {
         $data = [
-            'title' => 'Sugar Clone - Premium Sugar Products',
-            'description' => 'Premium quality sugar products for all your baking needs. From refined crystals to organic cane varieties, we have the perfect sweetness for every recipe.'
+            'title' => 'Sign Up | Sugar Clone',
+            'description' => 'Join Sugar Clone, the premium sugar dating platform. Create your profile and connect with attractive sugar babies and generous sugar daddies!'
         ];
 
-        return $this->renderer->render($response, 'pages/landing.php', $data);
+        return $this->renderer->render($response, 'pages/register.php', $data);
     }
 }
