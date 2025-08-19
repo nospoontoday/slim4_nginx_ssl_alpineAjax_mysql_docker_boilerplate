@@ -19,6 +19,7 @@ return function (App $app) {
     $app->get('/login', 'App\Actions\Web\LoginAction');
     $app->get('/register', 'App\Actions\Web\RegisterAction');
     $app->get('/dashboard', 'App\Actions\Web\DashboardAction');
+    $app->get('/database-test', 'App\Actions\Web\DatabaseTestAction');
     
     // API routes
     $app->group('/api/v1', function (RouteCollectorProxy $group) {
@@ -26,6 +27,9 @@ return function (App $app) {
         $group->post('/auth/login', 'App\Actions\Api\Auth\LoginAction');
         $group->post('/auth/register', 'App\Actions\Api\Auth\RegisterAction');
         $group->post('/auth/refresh', 'App\Actions\Api\Auth\RefreshAction');
+        
+        // Database health monitoring (public endpoint)
+        $group->get('/health/database', 'App\Actions\Api\DatabaseHealthAction');
         
         // Protected endpoints
         $group->group('', function (RouteCollectorProxy $group) {

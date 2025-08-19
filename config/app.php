@@ -15,33 +15,33 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\ErrorLogHandler;
 
 return [
-    // Database connection
-    PDO::class => function () {
-        $host = $_ENV['DB_HOST'] ?? 'localhost';
-        $dbname = $_ENV['DB_DATABASE'] ?? 'app';
-        $username = $_ENV['DB_USERNAME'] ?? 'root';
-        $password = $_ENV['DB_PASSWORD'] ?? 'root';
-        
-        $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
-        
-        $pdo = new PDO($dsn, $username, $password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-        ]);
-        
-        return $pdo;
+    // Database configuration
+    App\Database\DatabaseConfig::class => function () {
+        return new App\Database\DatabaseConfig();
     },
     
-    // Redis connection
-    Redis::class => function () {
-        $redis = new Redis();
-        $host = $_ENV['REDIS_HOST'] ?? 'localhost';
-        $port = (int) ($_ENV['REDIS_PORT'] ?? 6379);
-        
-        $redis->connect($host, $port);
-        
-        return $redis;
+    // Database connection manager
+    App\Database\DatabaseConnection::class => function (App\Database\DatabaseConfig $config, Logger $logger) {
+        return App\Database\DatabaseConnection::getInstance($logger, $config->getAll());
+    },
+    
+    // Database health service
+    App\Services\DatabaseHealthService::class => function (
+        App\Database\DatabaseConnection $dbConnection,
+        App\Database\DatabaseConfig $dbConfig,
+        Logger $logger
+    ) {
+        return new App\Services\DatabaseHealthService($dbConnection, $dbConfig, $logger);
+    },
+    
+    // Legacy PDO connection (for backward compatibility)
+    PDO::class => function (App\Database\DatabaseConnection $dbConnection) {
+        return $dbConnection->getMysqlConnection();
+    },
+    
+    // Legacy Redis connection (for backward compatibility)
+    Redis::class => function (App\Database\DatabaseConnection $dbConnection) {
+        return $dbConnection->getRedisConnection();
     },
     
     // Logger

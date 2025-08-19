@@ -67,6 +67,18 @@ db: ## Enter MySQL
 redis-cli: ## Enter Redis CLI
 	docker-compose exec redis redis-cli
 
+db-test: ## Test database connections
+	docker-compose exec app php scripts/test-db-connection.php
+
+db-health: ## Run database health check
+	docker-compose exec app php -r "require 'vendor/autoload.php'; \
+		\$config = new App\Database\DatabaseConfig(); \
+		\$logger = new Monolog\Logger('health'); \
+		\$dbConnection = App\Database\DatabaseConnection::getInstance(\$logger, \$config->getAll()); \
+		\$healthService = new App\Services\DatabaseHealthService(\$dbConnection, \$config, \$logger); \
+		\$health = \$healthService->performHealthCheck(); \
+		echo json_encode(\$health, JSON_PRETTY_PRINT);"
+
 init: ## Initialize project
 	composer install
 	make css

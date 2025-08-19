@@ -14,6 +14,7 @@ A comprehensive, production-ready PHP 8.3 application built with **Slim 4**, **H
 - **Docker Development Environment** with PHP-FPM, Nginx, MySQL, Redis
 - **Comprehensive Testing Setup** with PHPUnit, PHPStan, and PHP CS Fixer
 - **Security Features** including JWT authentication, rate limiting, and CORS
+- **Advanced Database Connection Management** with connection pooling, health monitoring, and automatic reconnection
 
 ## 🏗️ Architecture
 
@@ -53,6 +54,10 @@ project/
 │   │   └── Htmx/            # HTMX-specific endpoints
 │   ├── Services/             # Business logic
 │   ├── Repositories/         # Data access layer
+│   ├── Database/             # Database connection management
+│   │   ├── DatabaseConnection.php      # Connection manager with pooling
+│   │   ├── DatabaseConfig.php         # Configuration management
+│   │   └── DatabaseConnectionException.php # Custom exceptions
 │   ├── Http/                 # HTTP utilities
 │   ├── Middleware/           # Request/Response middleware
 │   ├── Validators/           # Input validation
@@ -75,6 +80,8 @@ project/
 │   ├── nginx/              # Nginx configuration
 │   └── mysql/              # Database setup
 │
+├── scripts/                 # Utility scripts
+│   └── test-db-connection.php # Database connection test script
 ├── tests/                   # Test files
 ├── composer.json            # PHP dependencies
 ├── docker-compose.yml       # Development environment
@@ -165,6 +172,8 @@ make fix             # Fix code style
 make migrate         # Run migrations
 make seed            # Seed database
 make fresh           # Fresh database with seeds
+make db-test         # Test database connections
+make db-health       # Run database health check
 ```
 
 ## 🎨 CSS Architecture
@@ -282,6 +291,30 @@ API endpoints are rate-limited to prevent abuse.
 - **Input Validation** with comprehensive rules
 - **SQL Injection Protection** with prepared statements
 - **XSS Protection** with output escaping
+
+## 🗄️ Database Connection Management
+
+### Advanced Connection System
+The application now features a robust database connection management system with the following capabilities:
+
+- **Connection Pooling**: Persistent connections for better performance
+- **Automatic Reconnection**: Handles connection failures gracefully
+- **Health Monitoring**: Real-time database health checks and diagnostics
+- **Configuration Management**: Centralized database settings with validation
+- **Performance Metrics**: Response time monitoring and connection usage tracking
+
+### Database Health Monitoring
+- **API Endpoint**: `/api/v1/health/database` for programmatic health checks
+- **Web Interface**: `/database-test` for visual monitoring and testing
+- **Command Line**: `php scripts/test-db-connection.php` for CLI testing
+- **Real-time Metrics**: Connection status, response times, and usage statistics
+
+### Connection Features
+- **MySQL 8.0**: Optimized connection settings with UTF8MB4 support
+- **Redis 7.2**: Enhanced configuration with serialization and prefixing
+- **Error Handling**: Custom exceptions with detailed context information
+- **Logging**: Comprehensive logging for debugging and monitoring
+- **Backward Compatibility**: Existing PDO and Redis dependencies continue to work
 
 ## 🤝 Contributing
 
